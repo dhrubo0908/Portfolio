@@ -1,0 +1,14 @@
+<svg width="840" height="1040" viewBox="0 0 840 1040" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="840" height="1040" rx="56" fill="#0F172A"/>
+  <path d="M0 748C128 646 230 634 386 703C552 776 687 756 840 612V1040H0V748Z" fill="url(#a)"/>
+  <circle cx="420" cy="330" r="156" fill="#CBD5E1"/>
+  <path d="M196 830C218 662 302 546 420 546C538 546 622 662 644 830H196Z" fill="#E2E8F0"/>
+  <text x="420" y="936" text-anchor="middle" fill="#F8FAFC" font-family="Arial, sans-serif" font-size="44" font-weight="700">Profile Photo</text>
+  <defs>
+    <linearGradient id="a" x1="0" y1="612" x2="840" y2="1040" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563EB"/>
+      <stop offset=".55" stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#F97316"/>
+    </linearGradient>
+  </defs>
+</svg>

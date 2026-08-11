@@ -1,0 +1,11 @@
+{
+  "name": "Tanvin Sadik Dhrubo Portfolio",
+  "short_name": "Dhrubo",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050816",
+  "theme_color": "#0F172A",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "128x128", "type": "image/svg+xml" }
+  ]
+}
