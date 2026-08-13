@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://portfolio-niv4.vercel.app/sitemap.xml
+Sitemap: https://tanvin-sadik-dhrubo.vercel.app/sitemap.xml

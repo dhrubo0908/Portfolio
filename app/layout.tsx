@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: `${personal.name} | Portfolio`,
   description: personal.headline,
   applicationName: `${personal.name} Portfolio`,
-  metadataBase: new URL("https://portfolio-niv4.vercel.app"),
+  metadataBase: new URL("https://tanvin-sadik-dhrubo.vercel.app"),
   openGraph: {
     title: `${personal.name} | Portfolio`,
     description: personal.headline,
