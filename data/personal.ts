@@ -7,9 +7,9 @@ export const personal = {
   degree: "Bachelor of Science in Computer Science & Engineering",
   cgpa: "3.55 / 4.00",
   location: "Khulna, Bangladesh",
-  email: "hello@example.com",
+  email: "dhrubotd@gmail.com",
   resumeUrl: "/resume.pdf",
-  portrait: "/images/portrait-placeholder.svg",
+  portrait: "/images/profile-balanced.png",
   heroImage: "/images/hero-workspace.png",
   interests: ["Artificial Intelligence", "Image Processing", "Web Development", "UI/UX Design", "Technology", "Digital Content Creation"],
   availability: "Open to internships, graduate programs, entry-level roles, and freelance projects"

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion, useScroll, useSpring } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowUp,
   BriefcaseBusiness,
@@ -28,7 +28,6 @@ import { services } from "@/data/services";
 import { skillGroups } from "@/data/skills";
 import { socials } from "@/data/socials";
 import { stats } from "@/data/stats";
-import { testimonials } from "@/data/testimonials";
 import { cn } from "@/lib/utils";
 
 const sections = ["home", "about", "skills", "projects", "experience", "contact"];
@@ -39,8 +38,7 @@ export default function Home() {
   const [commandOpen, setCommandOpen] = useState(false);
   const [activeProject, setActiveProject] = useState<(typeof projects)[number] | null>(null);
   const [wordIndex, setWordIndex] = useState(0);
-  const { scrollYProgress } = useScroll();
-  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 24 });
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
@@ -49,6 +47,20 @@ export default function Home() {
   useEffect(() => {
     const interval = window.setInterval(() => setWordIndex((index) => (index + 1) % personal.roleWords.length), 2100);
     return () => window.clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const updateScrollProgress = () => {
+      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(scrollableHeight > 0 ? window.scrollY / scrollableHeight : 0);
+    };
+    updateScrollProgress();
+    window.addEventListener("scroll", updateScrollProgress, { passive: true });
+    window.addEventListener("resize", updateScrollProgress);
+    return () => {
+      window.removeEventListener("scroll", updateScrollProgress);
+      window.removeEventListener("resize", updateScrollProgress);
+    };
   }, []);
 
   useEffect(() => {
@@ -69,7 +81,7 @@ export default function Home() {
   const commandItems = useMemo(
     () => [
       ...sections.map((section) => ({ label: `Go to ${section}`, href: `#${section}` })),
-      { label: "Download resume", href: personal.resumeUrl },
+      ...(personal.resumeUrl ? [{ label: "Download resume", href: personal.resumeUrl }] : []),
       { label: "Send email", href: `mailto:${personal.email}` }
     ],
     []
@@ -77,7 +89,7 @@ export default function Home() {
 
   return (
     <main>
-      <motion.div className="progress" style={{ scaleX: progress }} />
+      <div className="progress" style={{ transform: `scaleX(${scrollProgress})` }} />
       <CursorGlow />
       <LoadingScreen />
       <FloatingSocials />
@@ -120,12 +132,19 @@ export default function Home() {
           <p className="typing">{personal.roleWords[wordIndex]}</p>
           <p className="hero-copy">{personal.headline}</p>
           <div className="hero-actions">
-            <MagneticLink href={personal.resumeUrl} className="primary-button"><Download size={18} /> Download Resume</MagneticLink>
+            {personal.resumeUrl ? (
+              <>
+                <MagneticLink href={personal.resumeUrl} className="primary-button" download><Download size={18} /> Download Resume</MagneticLink>
+                <MagneticLink href={personal.resumeUrl} className="secondary-button" target="_blank"><ExternalLink size={18} /> View Resume</MagneticLink>
+              </>
+            ) : (
+              <button className="primary-button" type="button" disabled title="Add public/resume.pdf and update data/personal.ts to enable download"><Download size={18} /> Resume Coming Soon</button>
+            )}
             <MagneticLink href="#projects" className="secondary-button"><MousePointer2 size={18} /> View Projects</MagneticLink>
           </div>
         </motion.div>
         <motion.div className="portrait-shell" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.25 }}>
-          <Image src={personal.portrait} alt={`${personal.name} portrait placeholder`} width={420} height={520} />
+          <Image src={personal.portrait} alt={`${personal.name} professional portrait`} width={420} height={520} />
         </motion.div>
         <a className="scroll-cue" href="#about" aria-label="Scroll to about"><ChevronRight size={20} /></a>
       </section>
@@ -157,7 +176,7 @@ export default function Home() {
         </div>
       </Section>
 
-      <Section id="projects" kicker="Projects" title="Selected work and sharp placeholders for the next chapter.">
+      <Section id="projects" kicker="Projects" title="Selected work built with practical curiosity.">
         <div className="project-grid">
           {projects.map((project, index) => (
             <motion.button className="project-card" key={project.title} onClick={() => setActiveProject(project)} whileHover={{ y: -8, rotateX: 2, rotateY: -2 }} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.06 }}>
@@ -192,17 +211,14 @@ export default function Home() {
         </div>
       </Section>
 
-      <Section id="contact" kicker="Contact" title="Let’s build something polished enough to remember.">
-        <div className="contact-grid">
-          <form className="contact-form">
-            <input aria-label="Name" placeholder="Name" />
-            <input aria-label="Email" placeholder="Email" type="email" />
-            <textarea aria-label="Message" placeholder="Message" rows={5} />
-            <button type="button" className="primary-button"><Mail size={18} /> Send Message</button>
+      <Section id="contact" kicker="Contact" title="Let's build something polished enough to remember.">
+        <div className="contact-grid contact-grid-single">
+          <form className="contact-form" action={`mailto:${personal.email}`} method="post" encType="text/plain">
+            <input aria-label="Name" name="name" placeholder="Name" required />
+            <input aria-label="Email" name="email" placeholder="Email" type="email" required />
+            <textarea aria-label="Message" name="message" placeholder="Message" rows={5} required />
+            <button type="submit" className="primary-button"><Mail size={18} /> Send Message</button>
           </form>
-          <div className="testimonial-stack">
-            {testimonials.map((item) => <blockquote key={item.author}>{item.quote}<cite>{item.author} - {item.role}</cite></blockquote>)}
-          </div>
         </div>
       </Section>
 
@@ -233,8 +249,8 @@ function Info({ label, value }: { label: string; value: string }) {
   return <div><span>{label}</span><strong>{value}</strong></div>;
 }
 
-function MagneticLink({ href, className, children }: { href: string; className: string; children: React.ReactNode }) {
-  return <motion.a href={href} className={className} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>{children}</motion.a>;
+function MagneticLink({ href, className, children, download, target }: { href: string; className: string; children: React.ReactNode; download?: boolean; target?: string }) {
+  return <motion.a href={href} className={className} download={download} target={target} rel={target === "_blank" ? "noreferrer" : undefined} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>{children}</motion.a>;
 }
 
 function CursorGlow() {
@@ -261,7 +277,20 @@ function LoadingScreen() {
 }
 
 function FloatingSocials() {
-  return <aside className="floating-socials">{socials.map(({ label, href, icon: Icon }) => <a key={label} href={href} aria-label={label} title={label}><Icon size={17} /></a>)}</aside>;
+  const visibleSocials = socials.filter(({ href }) => href && href !== "#");
+  if (!visibleSocials.length) {
+    return null;
+  }
+  return (
+    <aside className="floating-socials" aria-label="Social links">
+      {visibleSocials.map(({ label, href, icon: Icon }) => (
+        <a key={label} href={href} aria-label={label} title={label} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined}>
+          <Icon size={17} />
+          <span>{label}</span>
+        </a>
+      ))}
+    </aside>
+  );
 }
 
 function ProjectModal({ project, onClose }: { project: (typeof projects)[number] | null; onClose: () => void }) {
@@ -276,10 +305,12 @@ function ProjectModal({ project, onClose }: { project: (typeof projects)[number]
             <h3>{project.title}</h3>
             <p>{project.description}</p>
             <div className="badges">{project.stack.map((item) => <span key={item}>{item}</span>)}</div>
-            <div className="modal-actions">
-              <a href={project.github}><Github size={18} /> GitHub</a>
-              <a href={project.live}><ExternalLink size={18} /> Live Demo</a>
-            </div>
+            {(project.github !== "#" || project.live !== "#") && (
+              <div className="modal-actions">
+                {project.github !== "#" && <a href={project.github}><Github size={18} /> GitHub</a>}
+                {project.live !== "#" && <a href={project.live}><ExternalLink size={18} /> Live Demo</a>}
+              </div>
+            )}
           </motion.article>
         </motion.div>
       )}

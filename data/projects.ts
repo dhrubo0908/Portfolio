@@ -34,14 +34,5 @@ export const projects = [
     stack: ["Python", "OpenCV", "Image Processing"],
     github: "#",
     live: "#"
-  },
-  {
-    title: "Future Projects",
-    category: "Exploration",
-    description: "A living space for upcoming AI, web, and design experiments as the portfolio evolves.",
-    image: "/images/project-future.svg",
-    stack: ["AI", "Next.js", "Product Design"],
-    github: "#",
-    live: "#"
   }
 ];
